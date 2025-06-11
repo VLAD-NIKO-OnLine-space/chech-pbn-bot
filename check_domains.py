@@ -43,11 +43,7 @@ def check_domain(domain):
         return 0
 
 
-async def send_default_button(application):
-    chat_id = ALLOWED_CHAT_ID
-    keyboard = [[InlineKeyboardButton("🔍 Проверить домены", callback_data="run_check")]]
-    markup = InlineKeyboardMarkup(keyboard)
-    await application.bot.send_message(chat_id=chat_id, text="Нажмите кнопку для проверки:", reply_markup=markup)
+
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -96,8 +92,16 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = "\n".join(output)
     await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
 
+    keyboard = [[InlineKeyboardButton("🔁 Проверить снова", callback_data="run_check")]]
+    markup = InlineKeyboardMarkup(keyboard)
+    await loading_message.edit_text(
+        f"<pre>{result}</pre>",
+        parse_mode="HTML",
+        reply_markup=markup
+    )    
+
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).post_init(send_default_button).build()
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("check", check_domains))
     app.add_handler(CallbackQueryHandler(button_handler))
