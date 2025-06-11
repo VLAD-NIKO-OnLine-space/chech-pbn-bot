@@ -76,7 +76,10 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
         
     now = datetime.now(ZoneInfo("Europe/Moscow")).strftime("%Y-%m-%d %H:%M:%S")
-    output = [f"=== Проверка от {now} ==="]
+    output = [
+        f"=== Проверка от {now} ===",
+        "------------------------------"
+    ]
 
     domains = load_domains()
     has_errors = False
@@ -95,6 +98,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
             has_errors = True
 
     if not has_errors:
+        output.append("------------------------------")
         output.append("Ошибок не обнаружено ✅")
 
     result = "\n".join(output)
