@@ -9,7 +9,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler
-
+from zoneinfo import ZoneInfo
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
 BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
@@ -75,7 +75,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         return
         
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now(ZoneInfo("Europe/Moscow")).strftime("%Y-%m-%d %H:%M:%S")
     output = [f"=== Проверка от {now} ==="]
 
     domains = load_domains()
