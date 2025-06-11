@@ -7,6 +7,9 @@ from datetime import datetime
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import asyncio
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CallbackQueryHandler
+
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
 BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
@@ -46,6 +49,12 @@ async def send_default_button(application):
     markup = InlineKeyboardMarkup(keyboard)
     await application.bot.send_message(chat_id=chat_id, text="Нажмите кнопку для проверки:", reply_markup=markup)
 
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "run_check":
+        await check_domains(update, context)
 
 
 async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
