@@ -8,7 +8,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
-BOT_TOKEN = "ТВОЙ_ТОКЕН_БОТА"
+BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
 ALLOWED_CHAT_ID = 678885516
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
