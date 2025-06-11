@@ -53,8 +53,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await check_domains(update, context)
         
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id != ALLOWED_CHAT_ID:
-        return await update.message.reply_text("Access denied.")
+    # if update.effective_chat.id != ALLOWED_CHAT_ID:
+    #     return await update.message.reply_text("Access denied.")
 
     keyboard = [[InlineKeyboardButton("🔍 Проверить домены", callback_data="run_check")]]
     markup = InlineKeyboardMarkup(keyboard)
