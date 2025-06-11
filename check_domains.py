@@ -39,11 +39,20 @@ def check_domain(domain):
     except requests.RequestException:
         return 0
 
+
+async def send_default_button(application):
+    chat_id = ALLOWED_CHAT_ID
+    keyboard = [[InlineKeyboardButton("🔍 Проверить домены", callback_data="run_check")]]
+    markup = InlineKeyboardMarkup(keyboard)
+    await application.bot.send_message(chat_id=chat_id, text="Нажмите кнопку для проверки:", reply_markup=markup)
+
+
+
 async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id != ALLOWED_CHAT_ID:
         return await update.message.reply_text("Access denied.")
 
-    loading_message = await update.message.reply_text("🔄 Проверка доменов... Пожалуйста, подождите )")
+    loading_message = await update.message.reply_text("⏳ Проверяю доступность доменов... Пожалуйста, подождите )")
     
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output = [f"=== Проверка от {now} ==="]
@@ -71,9 +80,11 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
 
 def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    app.add_handler(CommandHandler("check", check_domains))
+    app = ApplicationBuilder().token(BOT_TOKEN).post_init(send_default_button).build()
 
+    app.add_handler(CommandHandler("check", check_domains))
+    app.add_handler(CallbackQueryHandler(button_handler))
+    
     app.run_webhook(
         listen="0.0.0.0",
         port=10000,
