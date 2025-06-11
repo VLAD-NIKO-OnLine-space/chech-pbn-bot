@@ -61,18 +61,18 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = "\n".join(output)
     await update.message.reply_text(f"<pre>{result}</pre>", parse_mode="HTML")
 
-async def main():
+def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("check", check_domains))
 
-    await app.bot.set_webhook("https://chech-pbn-bot.onrender.com")
-
-    await app.run_webhook(
+    app.run_webhook(
         listen="0.0.0.0",
         port=10000,
         webhook_url="https://chech-pbn-bot.onrender.com"
     )
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
+
+
 
