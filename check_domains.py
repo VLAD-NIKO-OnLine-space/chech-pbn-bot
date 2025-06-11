@@ -83,6 +83,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     domains = load_domains()
     has_errors = False
+    errors = []
     
     for domain in domains:
         try:
@@ -96,8 +97,13 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
         output.append(f"{domain} ({ip}) — {status_str}")
         if not (200 <= status < 400):
             has_errors = True
+            errors.append(f"{domain} ({ip}) — {status_str}")
 
-    if not has_errors:
+    if has_errors:
+        output.append("------------------------------")
+        output.append("❗ Обнаружены ошибки:")
+        output.extend(errors)
+    else:
         output.append("------------------------------")
         output.append("Ошибок не обнаружено ✅")
 
