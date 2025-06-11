@@ -51,6 +51,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data == "run_check":
         await check_domains(update, context)
+        
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id != ALLOWED_CHAT_ID:
+        return await update.message.reply_text("Access denied.")
+
+    keyboard = [[InlineKeyboardButton("🔍 Проверить домены", callback_data="run_check")]]
+    markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text("Нажмите кнопку для проверки:", reply_markup=markup)
 
 
 async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -105,6 +113,8 @@ def main():
 
     app.add_handler(CommandHandler("check", check_domains))
     app.add_handler(CallbackQueryHandler(button_handler))
+    app.add_handler(CommandHandler("start", start))
+
     
     app.run_webhook(
         listen="0.0.0.0",
