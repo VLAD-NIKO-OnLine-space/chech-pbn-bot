@@ -92,7 +92,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = "\n".join(output)
     await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
 
-    keyboard = [[InlineKeyboardButton("🔁 Проверить снова", callback_data="run_check")]]
+    keyboard = [[InlineKeyboardButton("🔍Check Crypto PBN", callback_data="run_check")]]
     markup = InlineKeyboardMarkup(keyboard)
     await loading_message.edit_text(
         f"<pre>{result}</pre>",
