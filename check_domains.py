@@ -47,6 +47,8 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     output = [f"=== Проверка от {now} ==="]
 
     domains = load_domains()
+    has_errors = False
+    
     for domain in domains:
         try:
             ip = socket.gethostbyname(domain)
