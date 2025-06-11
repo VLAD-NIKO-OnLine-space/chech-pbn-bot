@@ -49,19 +49,34 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    if query.data == "run_check":
-        await check_domains(update, context)
+    if query.data == "run_check_crypto":
+        await check_domains(update, context, source_file="domains.json")
+    elif query.data == "run_check_odds":
+        await check_domains(update, context, source_file="odds_domains.json")
+
         
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # if update.effective_chat.id != ALLOWED_CHAT_ID:
     #     return await update.message.reply_text("Access denied.")
 
-    keyboard = [[InlineKeyboardButton("🔍 Проверить домены", callback_data="run_check")]]
+    keyboard = [
+        [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
+        [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")]
+    ]
+
+
+
+    
     markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Нажмите кнопку для проверки:", reply_markup=markup)
+    await update.message.reply_text("Выберите группу доменов для проверки:", reply_markup=markup)
 
 
-async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def load_domains(filename):
+    with open(filename, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return data.get("domains", [])
+
+async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, source_file="domains.json"):
     # if update.effective_chat.id != ALLOWED_CHAT_ID:
     #     return await update.message.reply_text("Access denied.")
 
@@ -81,7 +96,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "------------------------------"
     ]
 
-    domains = load_domains()
+    domains = load_domains(source_file)
     has_errors = False
     errors = []
     
@@ -108,9 +123,13 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
         output.append("Ошибок не обнаружено ✅")
 
     result = "\n".join(output)
-    await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
+    # await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
 
-    keyboard = [[InlineKeyboardButton("🔍Check Crypto PBN", callback_data="run_check")]]
+    keyboard = [
+        [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
+        [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")]
+    ]
+
     markup = InlineKeyboardMarkup(keyboard)
     await loading_message.edit_text(
         f"<pre>{result}</pre>",
@@ -121,7 +140,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    app.add_handler(CommandHandler("check", check_domains))
+    
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(CommandHandler("start", start))
 
