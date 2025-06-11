@@ -57,6 +57,11 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
         description = get_status_description(status)
         status_str = f"{status:03d} {description}"
         output.append(f"{domain} ({ip}) — {status_str}")
+        if not (200 <= status < 400):
+            has_errors = True
+
+    if not has_errors:
+        output.append("Ошибок не обнаружено ✅")
 
     result = "\n".join(output)
     await update.message.reply_text(f"<pre>{result}</pre>", parse_mode="HTML")
