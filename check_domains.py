@@ -43,6 +43,8 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id != ALLOWED_CHAT_ID:
         return await update.message.reply_text("Access denied.")
 
+    loading_message = await update.message.reply_text("🔄 Проверка доменов... Пожалуйста, подождите )")
+    
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output = [f"=== Проверка от {now} ==="]
 
@@ -66,7 +68,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
         output.append("Ошибок не обнаружено ✅")
 
     result = "\n".join(output)
-    await update.message.reply_text(f"<pre>{result}</pre>", parse_mode="HTML")
+    await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
