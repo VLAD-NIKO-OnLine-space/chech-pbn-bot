@@ -68,7 +68,7 @@ def main():
     app.run_webhook(
         listen="0.0.0.0",
         port=10000,
-        webhook_url="https://chech-pbn-bot.onrender.com"
+        webhook_url="https://chech-pbn-bot-1.onrender.com"
     )
 
 if __name__ == "__main__":
