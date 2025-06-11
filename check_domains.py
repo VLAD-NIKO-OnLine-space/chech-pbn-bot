@@ -61,8 +61,16 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id != ALLOWED_CHAT_ID:
         return await update.message.reply_text("Access denied.")
 
-    loading_message = await update.message.reply_text("⏳ Проверяю доступность доменов... Пожалуйста, подождите )")
-    
+
+    # Определим, откуда пришло сообщение
+    if update.message:
+        loading_message = await update.message.reply_text("⏳ Проверяю доступность доменов... Пожалуйста, подождите )")
+    elif update.callback_query:
+        await update.callback_query.answer()
+        loading_message = await update.callback_query.message.reply_text("⏳ Проверяю доступность доменов... Пожалуйста, подождите )")
+    else:
+        return
+        
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output = [f"=== Проверка от {now} ==="]
 
