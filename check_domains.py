@@ -154,6 +154,14 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
 
     result = "\n".join(output)
     # await loading_message.edit_text(f"<pre>{result}</pre>", parse_mode="HTML")
+    await loading_message.delete()
+    # Разбиваем результат на части и отправляем
+    MAX_LENGTH = 4000
+    for i in range(0, len(result), MAX_LENGTH):
+        await update.effective_chat.send_message(
+            text=f"<pre>{result[i:i+MAX_LENGTH]}</pre>",
+            parse_mode="HTML"
+        )
 
     keyboard = [
         [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
