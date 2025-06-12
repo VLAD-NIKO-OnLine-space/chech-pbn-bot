@@ -53,16 +53,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await check_domains(update, context, source_file="domains.json")
     elif query.data == "run_check_odds":
         await check_domains(update, context, source_file="odds_domains.json")
+    elif query.data == "run_check_polish":
+        await check_domains(update, context, source_file="polish_domains.json")
 
         
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # if update.effective_chat.id != ALLOWED_CHAT_ID:
     #     return await update.message.reply_text("Access denied.")
 
+    
+
     keyboard = [
         [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
-        [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")]
+        [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")],
+        [InlineKeyboardButton("🔍 Check Polish PBN", callback_data="run_check_polish")]
     ]
+
 
 
 
@@ -127,7 +133,8 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
 
     keyboard = [
         [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
-        [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")]
+        [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")],
+        [InlineKeyboardButton(🔍 Check Polish PBN", callback_data="run_check_polish")]
     ]
 
     markup = InlineKeyboardMarkup(keyboard)
