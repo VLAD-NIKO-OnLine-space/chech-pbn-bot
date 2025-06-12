@@ -139,7 +139,10 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
 
         if not (200 <= status < 400):
             has_errors = True
-            errors.append(f"{domain} ({ip}) — {status_str}")
+            errors.append(f"{domain} ({ip}) — {status_str} | {ssl_status}")
+        elif ssl_status == "❌ Нет SSL" or "истёк" in ssl_status:
+            has_errors = True
+            errors.append(f"{domain} ({ip}) — {status_str} | {ssl_status}")
             
     output.append("------------------------------")
     output.append(f"🔢 Проверено доменов: {len(domains)}")
@@ -170,11 +173,13 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
     ]
 
     markup = InlineKeyboardMarkup(keyboard)
-    await loading_message.edit_text(
-        f"<pre>{result}</pre>",
-        parse_mode="HTML",
-        reply_markup=markup
-    )    
+    await update.effective_chat.send_message("Выберите следующую группу:", reply_markup=markup)
+
+    # await loading_message.edit_text(
+    #     f"<pre>{result}</pre>",
+    #     parse_mode="HTML",
+    #     reply_markup=markup
+    # )    
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
