@@ -119,7 +119,10 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
         if not (200 <= status < 400):
             has_errors = True
             errors.append(f"{domain} ({ip}) — {status_str}")
-
+            
+    output.append("------------------------------")
+    output.append(f"🔢 Проверено доменов: {len(domains)}")
+    
     if has_errors:
         output.append("------------------------------")
         output.append("❗ Обнаружены ошибки:")
