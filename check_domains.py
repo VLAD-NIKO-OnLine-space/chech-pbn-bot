@@ -10,6 +10,8 @@ import asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler
 from zoneinfo import ZoneInfo
+from datetime import datetime, timezone
+import ssl
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
 BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
@@ -42,6 +44,16 @@ def check_domain(domain):
     except requests.RequestException:
         return 0
 
+def get_ssl_expiry(domain):
+    try:
+        context = ssl.create_default_context()
+        with socket.create_connection((domain, 443), timeout=5) as sock:
+            with context.wrap_socket(sock, server_hostname=domain) as ssock:
+                cert = ssock.getpeercert()
+                expiry = datetime.strptime(cert['notAfter'], "%b %d %H:%M:%S %Y %Z")
+                return expiry
+    except Exception as e:
+        return None
 
 
 
@@ -115,7 +127,16 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
         status = check_domain(domain)
         description = get_status_description(status)
         status_str = f"{status:03d} {description}"
-        output.append(f"{domain} ({ip}) — {status_str}")
+        # output.append(f"{domain} ({ip}) — {status_str}")
+        expiry = get_ssl_expiry(domain)
+        if expiry:
+            days_left = (expiry - datetime.utcnow()).days
+            ssl_status = f"🔒 SSL истекает через {days_left} дн." if days_left > 0 else "❌ SSL истёк"
+        else:
+            ssl_status = "❌ Нет SSL"
+
+    output.append(f"{domain} ({ip}) — {status_str} | {ssl_status}")
+
         if not (200 <= status < 400):
             has_errors = True
             errors.append(f"{domain} ({ip}) — {status_str}")
