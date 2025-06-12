@@ -135,7 +135,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
         else:
             ssl_status = "❌ Нет SSL"
 
-    output.append(f"{domain} ({ip}) — {status_str} | {ssl_status}")
+        output.append(f"{domain} ({ip}) — {status_str} | {ssl_status}")
 
         if not (200 <= status < 400):
             has_errors = True
