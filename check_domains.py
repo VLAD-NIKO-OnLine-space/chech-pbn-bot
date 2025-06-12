@@ -134,7 +134,7 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
     keyboard = [
         [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
         [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")],
-        [InlineKeyboardButton(🔍 Check Polish PBN", callback_data="run_check_polish")]
+        [InlineKeyboardButton("🔍 Check Polish PBN", callback_data="run_check_polish")]
     ]
 
     markup = InlineKeyboardMarkup(keyboard)
