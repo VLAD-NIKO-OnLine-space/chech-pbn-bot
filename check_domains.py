@@ -15,7 +15,7 @@ import ssl
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
 BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
-ALLOWED_CHAT_ID = 678885516
+ALLOWED_CHAT_ID = [678885516]
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -55,8 +55,6 @@ def get_ssl_expiry(domain):
     except Exception as e:
         return None
 
-
-
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -70,21 +68,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id != ALLOWED_CHAT_ID:
-        return await update.message.reply_text("Access denied.")
+    if update.effective_chat.id not in ALLOWED_CHAT_IDS:
+        return await update.message.reply_text("Access denied! Contact the author to use the bot's capabilities.")
 
     
-
     keyboard = [
         [InlineKeyboardButton("🔍 Check Crypto PBN", callback_data="run_check_crypto")],
         [InlineKeyboardButton("🔍 Check Odds PBN", callback_data="run_check_odds")],
         [InlineKeyboardButton("🔍 Check Polish PBN", callback_data="run_check_polish")]
     ]
 
-
-
-
-    
     markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Выберите группу доменов для проверки:", reply_markup=markup)
 
@@ -95,8 +88,8 @@ def load_domains(filename):
     return data.get("domains", [])
 
 async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, source_file="domains.json"):
-    if update.effective_chat.id != ALLOWED_CHAT_ID:
-        return await update.message.reply_text("Access denied.")
+    if update.effective_chat.id not in ALLOWED_CHAT_IDS:
+        return await update.message.reply_text("Access denied! Contact the author to use the bot's capabilities.")
 
 
     # Определим, откуда пришло сообщение
@@ -183,12 +176,10 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
-
     
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(CommandHandler("start", start))
 
-    
     app.run_webhook(
         listen="0.0.0.0",
         port=10000,
