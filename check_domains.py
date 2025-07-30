@@ -207,20 +207,21 @@ async def check_domains(update: Update, context: ContextTypes.DEFAULT_TYPE, sour
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
-    
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(CommandHandler("start", start))
 
-    async def run():
-        await asyncio.gather(
-            auto_check_task(app),  # задача с авто-проверкой
-            app.run_webhook(
-                listen="0.0.0.0",
-                port=10000,
-                webhook_url="https://chech-pbn-bot-1.onrender.com"
-            )
-        )
-    asyncio.run(run())
+
+    # Добавляем задачу авто-проверки
+    async def on_startup(app_):
+        asyncio.create_task(auto_check_task(app_))
+
+    app.post_init = on_startup
+
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=10000,
+        webhook_url="https://chech-pbn-bot-1.onrender.com"
+    )
 
 if __name__ == "__main__":
     main()
