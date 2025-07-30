@@ -10,14 +10,34 @@ import asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler
 from zoneinfo import ZoneInfo
-from datetime import datetime, timezone
 import ssl
+from datetime import datetime, timedelta, timezone
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
 BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
 ALLOWED_CHAT_IDS = [678885516, 772845670]
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+async def auto_check_task(application):
+    while True:
+        now = datetime.now(ZoneInfo("Europe/Moscow"))
+        next_run = now.replace(hour=16, minute=20, second=0, microsecond=0)
+        if next_run < now:
+            next_run += timedelta(days=1)
+
+        wait_seconds = (next_run - now).total_seconds()
+        print(f"[AUTO] Жду до {next_run} ({wait_seconds:.0f} сек)")
+        await asyncio.sleep(wait_seconds)
+
+        for chat_id in ALLOWED_CHAT_IDS:
+            dummy_update = type("DummyUpdate", (), {"effective_chat": type("Chat", (), {"id": chat_id})()})
+            dummy_context = type("DummyContext", (), {"bot": application.bot})()
+            print(f"[AUTO] Запускаю проверку для чата {chat_id}")
+            await check_domains(dummy_update, dummy_context, source_file="domains.json")
+
+
 
 def load_domains():
     with open('./domains.json', 'r', encoding='utf-8') as f:
@@ -191,11 +211,16 @@ def main():
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(CommandHandler("start", start))
 
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=10000,
-        webhook_url="https://chech-pbn-bot-1.onrender.com"
-    )
+    async def run():
+        await asyncio.gather(
+            auto_check_task(app),  # задача с авто-проверкой
+            app.run_webhook(
+                listen="0.0.0.0",
+                port=10000,
+                webhook_url="https://chech-pbn-bot-1.onrender.com"
+            )
+        )
+    asyncio.run(run())
 
 if __name__ == "__main__":
     main()
