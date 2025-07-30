@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 import ssl
 from datetime import datetime, timedelta, timezone
 from telegram import Message, Chat, User
+from types import SimpleNamespace
 
 # 🔐 Безопаснее хранить в переменной окружения или в отдельном файле
 BOT_TOKEN = "8103847969:AAE-V__8Kg2nxnL2gA3WCgLx8sk8gkK79II"
@@ -24,7 +25,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 async def auto_check_task(application):
     while True:
         now = datetime.now(ZoneInfo("Europe/Moscow"))
-        next_run = now.replace(hour=16, minute=40, second=0, microsecond=0)
+        next_run = now.replace(hour=16, minute=45, second=0, microsecond=0)
         if next_run < now:
             next_run += timedelta(days=1)
 
@@ -33,16 +34,15 @@ async def auto_check_task(application):
         await asyncio.sleep(wait_seconds)
 
         for chat_id in ALLOWED_CHAT_IDS:
-            # Создаём фейковое сообщение
-            fake_chat = Chat(id=chat_id, type="private")
-            fake_user = User(id=chat_id, is_bot=False, first_name="Auto")
-            fake_message = Message(message_id=1, date=datetime.now(), chat=fake_chat, from_user=fake_user, text="Автозапуск", bot=application.bot)
-
-            # Создаём Update
-            fake_update = Update(update_id=0, message=fake_message)
+            # создаём минимальный update
+            fake_update = SimpleNamespace(
+                effective_chat=Chat(id=chat_id, type="private"),
+                message=None,
+                callback_query=None
+            )
 
             print(f"[AUTO] Запускаю проверку для чата {chat_id}")
-            await check_domains(fake_update, ContextTypes.DEFAULT_TYPE(application=application), source_file="domains.json")
+            await check_domains(fake_update, SimpleNamespace(bot=application.bot), source_file="domains.json")
 
 
 
